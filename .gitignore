@@ -7,9 +7,18 @@ __pycache__/
 dist/
 build/
 *.egg
+*.pyc
+*.pyo
+.eggs/
+*.manifest
+.cache/
+pip-wheel-metadata/
 
 # Home Assistant
 .DS_Store
+.storage/
+config/
+.uuid
 
 # IDE
 .idea/
@@ -17,6 +26,11 @@ build/
 *.swp
 *.swo
 *~
+
+# Development
+tox.ini
+pytest.ini
+.pytest_cache/
 
 # Sisyphus internal
 .sisyphus/
