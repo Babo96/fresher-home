@@ -78,6 +78,7 @@ class BeurerDataUpdateCoordinator:
             from .signalr_client import BeurerSignalRClient
 
             self.signalr_client = BeurerSignalRClient(
+                access_token=access_token,
                 on_state_callback=self._on_state_update,
                 on_disconnect_callback=self._on_disconnect,
             )

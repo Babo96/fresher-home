@@ -58,26 +58,32 @@ The integration exposes the following sensor data from your air purifier:
 
 ## Installation
 
-### HACS (Recommended)
+### Manual Installation (Recommended)
 
-The easiest way to install this integration is through HACS:
+This is the primary installation method since the repository is hosted on Forgejo.
+
+#### Option A: Using HACS Developer Tools (if you mirror to GitHub)
+
+If you mirror this repository to GitHub, you can install via HACS:
 
 1. Open HACS in your Home Assistant instance
 2. Go to **Integrations**
 3. Click the **⋮** menu and select **Custom repositories**
-4. Add the repository URL: `ssh://git@git.babocraft.de:2222/Babo/fresher-home.git`
+4. Add your GitHub mirror URL
 5. Set the category to **Integration**
 6. Click **Add**
 7. Find **Beurer FreshHome** in the HACS store and click **Download**
 8. Restart Home Assistant
 
-### Manual Installation
+#### Option B: Manual Download
 
-If you prefer to install manually:
+1. Download or clone this repository
+2. Copy the `custom_components/beurer/` folder to your Home Assistant `config/custom_components/` directory
+3. Install the Python dependency: `pip install signalrcore` or add `signalrcore` to your `requirements.txt`
+4. Restart Home Assistant
+5. Add the integration via **Settings** → **Devices & Services** → **Add Integration** → **"Beurer FreshHome"**
 
-1. Download the latest release from the repository
-2. Copy the `custom_components/beurer/` directory to your Home Assistant `custom_components/` directory
-3. Restart Home Assistant
+> **Note:** HACS custom repository installation requires the repository to be hosted on GitHub. If you mirror this repo to GitHub, you can add it via HACS → Custom Repositories with the GitHub URL.
 
 ## Configuration
 

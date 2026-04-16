@@ -54,6 +54,7 @@ FAN_SPEED_MAP = {
 
 # Mode mappings (value -> name)
 MODE_MAP = {
+    0: "Unknown",
     1: "Manual",
     2: "Auto",
     3: "Sleep",
