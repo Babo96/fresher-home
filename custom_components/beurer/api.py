@@ -9,8 +9,8 @@ from typing import Any
 
 import aiohttp
 
-from .const import API_LOGIN, AUTH_URL
-from .models import LoginResponse
+from .const import API_GET_DEVICES, API_LOGIN, AUTH_URL, BASE_URL
+from .models import BeurerDevice, LoginResponse
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -187,3 +187,134 @@ class BeurerAuthClient:
         # Check expiry with 120-second buffer
         current_time = time.time()
         return current_time < (exp - 120)
+
+
+class BeurerApiClient:
+    """REST API client for Beurer FreshHome device operations."""
+
+    def __init__(
+        self,
+        session: aiohttp.ClientSession | None = None,
+        auth_client: BeurerAuthClient | None = None,
+    ) -> None:
+        """Initialize the API client.
+
+        Args:
+            session: Optional aiohttp ClientSession to use for requests.
+                     If not provided, a new session will be created.
+            auth_client: Optional BeurerAuthClient for token refresh operations.
+                         If not provided, a new instance will be created.
+        """
+        self._session = session
+        self._own_session = session is None
+        self._auth_client = auth_client or BeurerAuthClient(session)
+
+    async def _get_session(self) -> aiohttp.ClientSession:
+        """Get or create an aiohttp session."""
+        if self._session is None or self._session.closed:
+            self._session = aiohttp.ClientSession()
+        return self._session
+
+    async def close(self) -> None:
+        """Close the aiohttp session if we own it."""
+        if self._own_session and self._session is not None and not self._session.closed:
+            await self._session.close()
+            self._session = None
+        await self._auth_client.close()
+
+    async def _make_authenticated_request(
+        self,
+        method: str,
+        url: str,
+        access_token: str,
+        refresh_token: str | None = None,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Make an authenticated request with automatic token refresh on 401.
+
+        Args:
+            method: HTTP method (GET, POST, etc.).
+            url: Request URL.
+            access_token: Current access token for Bearer authentication.
+            refresh_token: Optional refresh token for token refresh on 401.
+            **kwargs: Additional arguments to pass to the request.
+
+        Returns:
+            JSON response as dictionary.
+
+        Raises:
+            BeurerApiClientError: If the request fails or token refresh fails.
+        """
+        session = await self._get_session()
+        headers = kwargs.pop("headers", {})
+        headers["Authorization"] = f"Bearer {access_token}"
+
+        try:
+            async with session.request(
+                method, url, headers=headers, **kwargs
+            ) as response:
+                if response.status == 401 and refresh_token:
+                    # Token expired, try to refresh
+                    _LOGGER.debug("Access token expired, attempting refresh")
+                    new_tokens = await self._auth_client.refresh_token(refresh_token)
+                    # Retry with new token
+                    headers["Authorization"] = f"Bearer {new_tokens.access_token}"
+                    async with session.request(
+                        method, url, headers=headers, **kwargs
+                    ) as retry_response:
+                        if retry_response.status != 200:
+                            text = await retry_response.text()
+                            raise BeurerApiClientError(
+                                f"API request failed after token refresh: HTTP {retry_response.status} - {text}"
+                            )
+                        return await retry_response.json()
+
+                if response.status != 200:
+                    text = await response.text()
+                    raise BeurerApiClientError(
+                        f"API request failed: HTTP {response.status} - {text}"
+                    )
+
+                return await response.json()
+
+        except aiohttp.ClientError as err:
+            raise BeurerApiClientError(f"Connection error: {err}") from err
+
+    async def get_devices(
+        self, email: str, access_token: str, refresh_token: str | None = None
+    ) -> list[BeurerDevice]:
+        """Get list of devices for a user.
+
+        Endpoint: GET /api/users/list?email=<email>
+
+        Args:
+            email: User email address.
+            access_token: Valid access token for authentication.
+            refresh_token: Optional refresh token for automatic token refresh.
+
+        Returns:
+            List of BeurerDevice objects.
+
+        Raises:
+            BeurerApiClientError: If the request fails.
+        """
+        url = f"{BASE_URL}{API_GET_DEVICES}"
+        params = {"email": email}
+
+        response_data = await self._make_authenticated_request(
+            "GET", url, access_token, refresh_token, params=params
+        )
+
+        devices = []
+        devices_data = response_data.get("devices", [])
+
+        for device_data in devices_data:
+            device = BeurerDevice(
+                id=device_data.get("id", ""),
+                name=device_data.get("name", ""),
+                model=device_data.get("model", ""),
+                user=device_data.get("user", ""),
+            )
+            devices.append(device)
+
+        return devices
