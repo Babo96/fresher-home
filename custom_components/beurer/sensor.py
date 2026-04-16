@@ -70,12 +70,15 @@ class BeurerPM25Sensor(BeurerEntity, SensorEntity):
         self._attr_name = "PM2.5"
 
     @property
-    def native_value(self) -> int | None:
+    def native_value(self) -> float | None:
         """Return the PM2.5 value."""
         device_state = self.coordinator.device_states.get(self.device_id)
         if device_state is None:
             return None
-        return device_state.get("pm")
+        pm = device_state.get("pm")
+        if pm is None:
+            return None
+        return round(pm / 10, 1)
 
     @callback
     def handle_state_update(self, new_state: dict[str, Any] | None) -> None:
@@ -173,12 +176,15 @@ class BeurerTemperatureSensor(BeurerEntity, SensorEntity):
         return TEMP_UNIT_MAP.get(temp_unit, "°C")
 
     @property
-    def native_value(self) -> int | None:
+    def native_value(self) -> float | None:
         """Return the temperature value."""
         device_state = self.coordinator.device_states.get(self.device_id)
         if device_state is None:
             return None
-        return device_state.get("temperature")
+        temp = device_state.get("temperature")
+        if temp is None:
+            return None
+        return round(temp / 256, 1)
 
     @callback
     def handle_state_update(self, new_state: dict[str, Any] | None) -> None:
