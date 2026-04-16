@@ -194,10 +194,10 @@ class BeurerTemperatureSensor(BeurerEntity, SensorEntity):
 
 
 class BeurerFilterStatusSensor(BeurerEntity, SensorEntity):
-    """Representation of a Beurer filter status sensor."""
+    """Representation of a Beurer filter status sensor (hours remaining)."""
 
     _attr_state_class = SensorStateClass.MEASUREMENT
-    _attr_native_unit_of_measurement = PERCENTAGE
+    _attr_native_unit_of_measurement = "h"
     _attr_icon = "mdi:air-filter"
 
     def __init__(
@@ -208,11 +208,11 @@ class BeurerFilterStatusSensor(BeurerEntity, SensorEntity):
         """Initialize the filter status sensor."""
         super().__init__(coordinator, device_id)
         self._attr_unique_id = f"{device_id}_filter_status"
-        self._attr_name = "Filter Status"
+        self._attr_name = "Filter Remaining"
 
     @property
     def native_value(self) -> int | None:
-        """Return the filter remaining percentage."""
+        """Return the filter remaining hours."""
         device_state = self.coordinator.device_states.get(self.device_id)
         if device_state is None:
             return None
