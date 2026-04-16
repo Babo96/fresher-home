@@ -1,0 +1,1 @@
+# Beurer FreshHome Integration
