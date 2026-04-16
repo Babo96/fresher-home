@@ -193,7 +193,9 @@ class BeurerTemperatureSensor(BeurerEntity, SensorEntity):
         return round(temp / 256, 1)
 
     @callback
-    def handle_state_update(self, new_state: dict[str, Any] | None) -> None:
+    def handle_state_update(
+        self, device_id: str, new_state: dict[str, Any] | None
+    ) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()
