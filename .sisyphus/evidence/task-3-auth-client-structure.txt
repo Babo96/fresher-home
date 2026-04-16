@@ -1,0 +1,35 @@
+Task 3 QA Evidence - Auth Client Module Structure
+=================================================
+
+Date: 2026-04-16
+
+Scenario: Auth client module structure validates
+------------------------------------------------
+
+Test 1: Import validation
+Command: python3 -c "from custom_components.beurer.api import BeurerAuthClient; print('Import OK')"
+Result: Import OK
+
+Test 2: Methods validation  
+Command: python3 AST validation
+Code:
+  import ast
+  with open('custom_components/beurer/api.py', 'r') as f:
+      source = f.read()
+  tree = ast.parse(source)
+  for node in ast.walk(tree):
+      if isinstance(node, ast.ClassDef) and node.name == 'BeurerAuthClient':
+          methods = [n.name for n in node.body if isinstance(n, ast.FunctionDef) or isinstance(n, ast.AsyncFunctionDef)]
+          assert 'login' in methods
+          assert 'refresh_token' in methods
+          assert 'validate_token' in methods
+  print('Methods OK')
+
+Result: Methods OK
+
+Verified Methods:
+- login(email: str, password: str) -> LoginResponse
+- refresh_token(refresh_token: str) -> LoginResponse  
+- validate_token(access_token: str) -> bool
+
+Status: PASSED
