@@ -9,9 +9,9 @@ CONF_EMAIL = "email"
 CONF_PASSWORD = "password"
 
 # API URLs
-BASE_URL = "https://freshhome.azurewebsites.net"
+BASE_URL = "https://freshhome.connect.beurer.com"
 AUTH_URL = "https://beurer-sso-prod.azurewebsites.net"
-SIGNALR_URL = "wss://freshhome.azurewebsites.net/messageHub"
+SIGNALR_URL = "wss://freshhome.connect.beurer.com/messageHub"
 
 # API endpoints
 API_LOGIN = "/connect/token"
