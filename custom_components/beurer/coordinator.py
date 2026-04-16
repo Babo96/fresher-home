@@ -8,7 +8,7 @@ import time
 from typing import Any, Awaitable, Callable, Dict, Optional, Set
 
 from .const import (  # type: ignore
-    SEND_METHOD,
+    DISCONNECT_TIMEOUT,
 )
 from .models import AwsCmdModel, BeurerDevice
 
@@ -295,7 +295,7 @@ class BeurerDataUpdateCoordinator:
         last_seen = info.get("last_seen")
         if last_seen is None:
             return True
-        return (time.time() - last_seen) > 15.0
+        return (time.time() - last_seen) > DISCONNECT_TIMEOUT
 
     def get_device_model(self, device_id: str) -> str:
         """Return the device model for a given device_id or LR500 by default."""

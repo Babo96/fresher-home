@@ -1,5 +1,7 @@
 """Number platform for Beurer FreshHome."""
 
+from __future__ import annotations
+
 from homeassistant.components.number import NumberEntity
 from homeassistant.core import callback
 

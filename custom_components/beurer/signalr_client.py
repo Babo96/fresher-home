@@ -45,6 +45,7 @@ try:
         DEFAULT_SOURCE as SOURCE_ANDROID,
         RECEIVE_METHOD,
         SEND_METHOD,
+        DISCONNECT_TIMEOUT,
     )
 except Exception:  # pragma: no cover
     # Fallbacks in environments where imports are not available.
@@ -53,6 +54,7 @@ except Exception:  # pragma: no cover
     SOURCE_ANDROID = "Android"
     RECEIVE_METHOD = "ReceiveMessage"
     SEND_METHOD = "SendCommand"
+    DISCONNECT_TIMEOUT = 15
 
 from .models import AwsCmdModel
 
@@ -71,7 +73,7 @@ class BeurerSignalRClient:
         on_state_callback: Callable[[str, Dict[str, Any]], Awaitable[None] | None],
         on_disconnect_callback: Callable[[str], Awaitable[None] | None],
         hub_url: Optional[str] = None,
-        disconnect_timeout: int = 15,
+        disconnect_timeout: int = DISCONNECT_TIMEOUT,
         logger: Optional[logging.Logger] = None,
     ) -> None:
         self.hub_url: str = hub_url or SIGNALR_HUB_URL
@@ -320,7 +322,7 @@ class BeurerSignalRClient:
                 finally:
                     # Clean up watcher
                     self._disconnect_tasks.pop(device_id, None)
-                    break
+                break
 
 
 class _FakeSignalRConnection:

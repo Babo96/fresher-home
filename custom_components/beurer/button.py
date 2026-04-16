@@ -1,5 +1,7 @@
 """Button entities for Beurer FreshHome."""
 
+from __future__ import annotations
+
 from homeassistant.components.button import ButtonEntity
 from homeassistant.core import callback
 

@@ -30,6 +30,9 @@ API_DELETE_SCHEDULE = "/api/deviceSchedules/delete"
 SEND_METHOD = "SendCommand"
 RECEIVE_METHOD = "ReceiveMessage"
 
+# Timeout constants
+DISCONNECT_TIMEOUT = 15
+
 # Protocol constants
 PROTOCOL_VERSION = "2018-08-31"
 DEFAULT_SOURCE = "Android"
