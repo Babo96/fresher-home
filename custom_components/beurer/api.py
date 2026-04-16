@@ -102,7 +102,8 @@ class BeurerAuthClient:
             "password": password,
             "grant_type": "password",
             "client_id": "beurersso",
-            "scope": "openid profile email offline_access",
+            "client_secret": "xm(n%TJe:~6s#5Sw",
+            "scope": "sso offline_access freshhome",
         }
 
         return await self._make_token_request(data)
@@ -123,6 +124,7 @@ class BeurerAuthClient:
             "grant_type": "refresh_token",
             "refresh_token": refresh_token,
             "client_id": "beurersso",
+            "client_secret": "xm(n%TJe:~6s#5Sw",
         }
 
         return await self._make_token_request(data)
