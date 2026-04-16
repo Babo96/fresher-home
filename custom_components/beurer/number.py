@@ -59,7 +59,7 @@ class BeurerTimerNumber(BeurerEntity, NumberEntity):
         )
 
     @callback
-    def handle_state_update(self, new_state: dict | None) -> None:
+    def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()

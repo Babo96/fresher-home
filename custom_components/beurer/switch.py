@@ -63,7 +63,7 @@ class BeurerSleepSwitch(BeurerEntity, SwitchEntity):
         await self.coordinator.async_send_command(self.device_id, "sleep", 0)
 
     @callback
-    def handle_state_update(self, new_state: dict | None) -> None:
+    def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()
@@ -105,7 +105,7 @@ class BeurerUVSwitch(BeurerEntity, SwitchEntity):
         await self.coordinator.async_send_command(self.device_id, "uv", 0)
 
     @callback
-    def handle_state_update(self, new_state: dict | None) -> None:
+    def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()
@@ -147,7 +147,7 @@ class BeurerBuzzerSwitch(BeurerEntity, SwitchEntity):
         await self.coordinator.async_send_command(self.device_id, "buzzer", 0)
 
     @callback
-    def handle_state_update(self, new_state: dict | None) -> None:
+    def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()

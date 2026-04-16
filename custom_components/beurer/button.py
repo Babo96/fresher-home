@@ -52,7 +52,7 @@ class BeurerFilterResetButton(BeurerEntity, ButtonEntity):
         await self.coordinator.async_send_command(self.device_id, "filterReset", 1)
 
     @callback
-    def handle_state_update(self, new_state: dict | None) -> None:
+    def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()
@@ -84,7 +84,7 @@ class BeurerReadButton(BeurerEntity, ButtonEntity):
         await self.coordinator.async_send_command(self.device_id, "read", 1)
 
     @callback
-    def handle_state_update(self, new_state: dict | None) -> None:
+    def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()
