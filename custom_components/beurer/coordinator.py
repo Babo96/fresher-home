@@ -1,0 +1,1 @@
+"""Coordinator for Beurer FreshHome."""

@@ -1,0 +1,7 @@
+{
+  "name": "Beurer FreshHome",
+  "hacs": "1.6.0",
+  "domains": ["beurer"],
+  "iot_class": "cloud_push",
+  "homeassistant": "2024.1.0"
+}
