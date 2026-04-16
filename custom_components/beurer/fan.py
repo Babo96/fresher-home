@@ -109,9 +109,14 @@ class BeurerFan(FanEntity, BeurerEntity):
         """Return the step size for percentage."""
         return 25
 
-    async def async_turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, percentage: int | None = None, **kwargs: Any) -> None:
         """Turn on the fan."""
         try:
+            # If percentage is provided, set that speed
+            if percentage is not None and percentage > 0:
+                await self.async_set_percentage(percentage)
+                return
+
             await self.coordinator.async_send_command(self.device_id, "power", 1)
             # Update local state optimistically
             if self.device_id in self.coordinator.device_states:
@@ -171,7 +176,7 @@ class BeurerFan(FanEntity, BeurerEntity):
             raise
 
     @callback
-    def handle_state_update(self, new_state: dict | None) -> None:
+    def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
         """Handle state update from coordinator.
 
         Called by the coordinator when the device state changes.

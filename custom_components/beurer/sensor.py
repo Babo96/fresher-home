@@ -81,7 +81,9 @@ class BeurerPM25Sensor(BeurerEntity, SensorEntity):
         return round(pm / 10, 1)
 
     @callback
-    def handle_state_update(self, new_state: dict[str, Any] | None) -> None:
+    def handle_state_update(
+        self, device_id: str, new_state: dict[str, Any] | None
+    ) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()
@@ -112,7 +114,9 @@ class BeurerAQISensor(BeurerEntity, SensorEntity):
         return device_state.get("airquality")
 
     @callback
-    def handle_state_update(self, new_state: dict[str, Any] | None) -> None:
+    def handle_state_update(
+        self, device_id: str, new_state: dict[str, Any] | None
+    ) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()
@@ -144,7 +148,9 @@ class BeurerHumiditySensor(BeurerEntity, SensorEntity):
         return device_state.get("humidity")
 
     @callback
-    def handle_state_update(self, new_state: dict[str, Any] | None) -> None:
+    def handle_state_update(
+        self, device_id: str, new_state: dict[str, Any] | None
+    ) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()
@@ -219,7 +225,9 @@ class BeurerFilterStatusSensor(BeurerEntity, SensorEntity):
         return device_state.get("filterLeft")
 
     @callback
-    def handle_state_update(self, new_state: dict[str, Any] | None) -> None:
+    def handle_state_update(
+        self, device_id: str, new_state: dict[str, Any] | None
+    ) -> None:
         """Handle state update from coordinator."""
         if new_state is not None:
             self.async_write_ha_state()
