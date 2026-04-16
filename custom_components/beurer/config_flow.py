@@ -33,9 +33,12 @@ class BeurerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             email = user_input[CONF_EMAIL]
             password = user_input[CONF_PASSWORD]
 
+            auth_client = None
             try:
                 auth_client = BeurerAuthClient()
+                _LOGGER.debug("Attempting login for email: %s", email)
                 login_response = await auth_client.login(email, password)
+                _LOGGER.debug("Login successful for email: %s", email)
 
                 # Create config entry with token data
                 return self.async_create_entry(
@@ -51,14 +54,19 @@ class BeurerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             except BeurerApiClientError as err:
                 error_str = str(err).lower()
+                _LOGGER.error("Beurer API error during login: %s", err)
                 if "invalid_grant" in error_str:
                     errors["base"] = "invalid_auth"
                 elif "connection" in error_str:
                     errors["base"] = "cannot_connect"
                 else:
                     errors["base"] = "unknown"
-            except Exception:
+            except Exception as err:
+                _LOGGER.exception("Unexpected error during login: %s", err)
                 errors["base"] = "unknown"
+            finally:
+                if auth_client is not None:
+                    await auth_client.close()
 
         # Show form
         data_schema = vol.Schema(
