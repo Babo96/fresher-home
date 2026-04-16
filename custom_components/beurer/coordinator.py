@@ -73,36 +73,19 @@ class BeurerDataUpdateCoordinator:
                 "last_seen": now,
             }
 
-        # Attempt to initialize a SignalR client if available
+        # Initialize SignalR client if available
         try:
-            from .signalr_client import BeurerSignalRClient  # type: ignore
+            from .signalr_client import BeurerSignalRClient
 
-            signalr_cls = BeurerSignalRClient
-        except Exception:  # pragma: no cover
-            signalr_cls = None
-
-        if signalr_cls:
-            try:
-                # Try a couple of common constructor patterns defensively
-                self.signalr_client = signalr_cls(
-                    api_client=self.api_client,  # type: ignore[arg-type]
-                    on_state_update=self._on_state_update,  # type: ignore[arg-type]
-                    on_disconnect=self._on_disconnect,  # type: ignore[arg-type]
-                )
-                if hasattr(self.signalr_client, "connect"):
-                    await self.signalr_client.connect()  # type: ignore[call-arg]
-            except TypeError as te:
-                _LOGGER.debug("SignalR init signature mismatch: %s", te)
-                try:
-                    self.signalr_client = signalr_cls(self.api_client)  # type: ignore[arg-type]
-                    if hasattr(self.signalr_client, "connect"):
-                        await self.signalr_client.connect()  # type: ignore[call-arg]
-                except Exception as err:  # pragma: no cover
-                    _LOGGER.debug("SignalR init failed: %s", err)
-                    self.signalr_client = None
-            except Exception as err:  # pragma: no cover
-                _LOGGER.debug("SignalR connection failed: %s", err)
-                self.signalr_client = None
+            self.signalr_client = BeurerSignalRClient(
+                on_state_callback=self._on_state_update,
+                on_disconnect_callback=self._on_disconnect,
+            )
+            await self.signalr_client.async_connect()
+            _LOGGER.info("SignalR client connected successfully")
+        except Exception as err:
+            _LOGGER.warning("SignalR connection failed: %s", err)
+            self.signalr_client = None
 
         self._initialized = True
 
@@ -110,9 +93,8 @@ class BeurerDataUpdateCoordinator:
         """Cleanup resources and disconnect SignalR client."""
         if self.signalr_client is not None:
             try:
-                if hasattr(self.signalr_client, "disconnect"):
-                    await self.signalr_client.disconnect()  # type: ignore[call-arg]
-            except Exception as err:  # pragma: no cover
+                await self.signalr_client.async_disconnect()
+            except Exception as err:
                 _LOGGER.debug("SignalR disconnect failed: %s", err)
             finally:
                 self.signalr_client = None
@@ -179,37 +161,24 @@ class BeurerDataUpdateCoordinator:
     ) -> None:
         """Send a command to a device via SignalR and handle token refresh on 401."""
         if self.signalr_client is None:
-            _LOGGER.debug(
-                "No SignalR client configured; cannot send command for %s", device_id
-            )
+            _LOGGER.debug("No SignalR client; cannot send command for %s", device_id)
             return
 
-        cmd = AwsCmdModel(function=function, value=value)
-        payload = cmd.to_dict()
-
-        # Try sending via common interface methods adaptively
-        sent = False
-        retries = 0
-        while not sent and retries < 2:
-            try:
-                if hasattr(self.signalr_client, "send_command"):
-                    await self.signalr_client.send_command(device_id, payload)  # type: ignore[call-arg]
-                    sent = True
-                elif hasattr(self.signalr_client, "send"):
-                    await self.signalr_client.send(payload)  # type: ignore[call-arg]
-                    sent = True
-                else:
-                    _LOGGER.debug("SignalR client has no supported send method")
-                    sent = True
-            except Exception as err:  # pragma: no cover
-                msg = str(err)
-                if "401" in msg or "Unauthorized" in msg:
-                    # Token might be expired; refresh and retry once
-                    await self.async_refresh_token()
-                    retries += 1
-                    continue
-                _LOGGER.debug("Failed to send command: %s", msg)
-                retries += 1
+        try:
+            await self.signalr_client.async_send_command(device_id, function, value)
+        except Exception as err:
+            msg = str(err)
+            if "401" in msg or "Unauthorized" in msg:
+                # Token might be expired; refresh and retry once
+                await self.async_refresh_token()
+                try:
+                    await self.signalr_client.async_send_command(
+                        device_id, function, value
+                    )
+                except Exception as retry_err:
+                    _LOGGER.error("Command failed after token refresh: %s", retry_err)
+            else:
+                _LOGGER.error("Failed to send command: %s", msg)
 
     async def async_register_entity(
         self, device_id: str, callback: Callable[[str, Dict[str, Any]], Any]

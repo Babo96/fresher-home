@@ -48,7 +48,7 @@ class BeurerEntity(Entity):
         )
 
     @callback
-    def handle_state_update(self, new_state: dict | None) -> None:
+    def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
         """Handle state update from coordinator.
 
         Called by the coordinator when the device state changes.

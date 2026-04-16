@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
 
+from .api import BeurerApiClient
 from .const import DOMAIN
 from .coordinator import BeurerDataUpdateCoordinator
 
@@ -32,7 +32,11 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Beurer FreshHome from a config entry."""
-    coordinator = BeurerDataUpdateCoordinator(hass, entry)
+    # Create API client for device discovery and token management
+    api_client = BeurerApiClient()
+
+    # Create coordinator with API client
+    coordinator = BeurerDataUpdateCoordinator(hass, entry, api_client)
 
     # Store coordinator
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
