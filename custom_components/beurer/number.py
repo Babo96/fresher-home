@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import logging
+
 from homeassistant.components.number import NumberEntity
 from homeassistant.core import callback
 
 from .const import DOMAIN
 from .coordinator import BeurerDataUpdateCoordinator
 from .entity import BeurerEntity
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -54,9 +58,17 @@ class BeurerTimerNumber(BeurerEntity, NumberEntity):
 
     async def async_set_native_value(self, value: float) -> None:
         """Set the timer value in minutes."""
-        await self.coordinator.async_send_command(
-            self.device_id, "timerMin", int(value)
-        )
+        old_value = self.coordinator.device_states.get(self.device_id, {}).get("timerMin")
+        try:
+            if self.device_id in self.coordinator.device_states:
+                self.coordinator.device_states[self.device_id]["timerMin"] = int(value)
+                self.async_write_ha_state()
+            await self.coordinator.async_send_command(self.device_id, "timerMin", int(value))
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_value is not None:
+                self.coordinator.device_states[self.device_id]["timerMin"] = old_value
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to set timer for device %s", self.device_id)
 
     @callback
     def handle_state_update(self, device_id: str, new_state: dict | None) -> None:

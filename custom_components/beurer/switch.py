@@ -56,11 +56,31 @@ class BeurerSleepSwitch(BeurerEntity, SwitchEntity):
 
     async def async_turn_on(self) -> None:
         """Turn sleep mode on."""
-        await self.coordinator.async_send_command(self.device_id, "sleep", 1)
+        old_value = self.coordinator.device_states.get(self.device_id, {}).get("sleep")
+        try:
+            if self.device_id in self.coordinator.device_states:
+                self.coordinator.device_states[self.device_id]["sleep"] = 1
+                self.async_write_ha_state()
+            await self.coordinator.async_send_command(self.device_id, "sleep", 1)
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_value is not None:
+                self.coordinator.device_states[self.device_id]["sleep"] = old_value
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to turn on sleep mode for device %s", self.device_id)
 
     async def async_turn_off(self) -> None:
         """Turn sleep mode off."""
-        await self.coordinator.async_send_command(self.device_id, "sleep", 0)
+        old_value = self.coordinator.device_states.get(self.device_id, {}).get("sleep")
+        try:
+            if self.device_id in self.coordinator.device_states:
+                self.coordinator.device_states[self.device_id]["sleep"] = 0
+                self.async_write_ha_state()
+            await self.coordinator.async_send_command(self.device_id, "sleep", 0)
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_value is not None:
+                self.coordinator.device_states[self.device_id]["sleep"] = old_value
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to turn off sleep mode for device %s", self.device_id)
 
     @callback
     def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
@@ -98,11 +118,31 @@ class BeurerUVSwitch(BeurerEntity, SwitchEntity):
 
     async def async_turn_on(self) -> None:
         """Turn UV light on."""
-        await self.coordinator.async_send_command(self.device_id, "uv", 1)
+        old_value = self.coordinator.device_states.get(self.device_id, {}).get("uv")
+        try:
+            if self.device_id in self.coordinator.device_states:
+                self.coordinator.device_states[self.device_id]["uv"] = 1
+                self.async_write_ha_state()
+            await self.coordinator.async_send_command(self.device_id, "uv", 1)
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_value is not None:
+                self.coordinator.device_states[self.device_id]["uv"] = old_value
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to turn on UV light for device %s", self.device_id)
 
     async def async_turn_off(self) -> None:
         """Turn UV light off."""
-        await self.coordinator.async_send_command(self.device_id, "uv", 0)
+        old_value = self.coordinator.device_states.get(self.device_id, {}).get("uv")
+        try:
+            if self.device_id in self.coordinator.device_states:
+                self.coordinator.device_states[self.device_id]["uv"] = 0
+                self.async_write_ha_state()
+            await self.coordinator.async_send_command(self.device_id, "uv", 0)
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_value is not None:
+                self.coordinator.device_states[self.device_id]["uv"] = old_value
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to turn off UV light for device %s", self.device_id)
 
     @callback
     def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
@@ -140,11 +180,31 @@ class BeurerBuzzerSwitch(BeurerEntity, SwitchEntity):
 
     async def async_turn_on(self) -> None:
         """Turn buzzer on."""
-        await self.coordinator.async_send_command(self.device_id, "buzzer", 1)
+        old_value = self.coordinator.device_states.get(self.device_id, {}).get("buzzer")
+        try:
+            if self.device_id in self.coordinator.device_states:
+                self.coordinator.device_states[self.device_id]["buzzer"] = 1
+                self.async_write_ha_state()
+            await self.coordinator.async_send_command(self.device_id, "buzzer", 1)
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_value is not None:
+                self.coordinator.device_states[self.device_id]["buzzer"] = old_value
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to turn on buzzer for device %s", self.device_id)
 
     async def async_turn_off(self) -> None:
         """Turn buzzer off."""
-        await self.coordinator.async_send_command(self.device_id, "buzzer", 0)
+        old_value = self.coordinator.device_states.get(self.device_id, {}).get("buzzer")
+        try:
+            if self.device_id in self.coordinator.device_states:
+                self.coordinator.device_states[self.device_id]["buzzer"] = 0
+                self.async_write_ha_state()
+            await self.coordinator.async_send_command(self.device_id, "buzzer", 0)
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_value is not None:
+                self.coordinator.device_states[self.device_id]["buzzer"] = old_value
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to turn off buzzer for device %s", self.device_id)
 
     @callback
     def handle_state_update(self, device_id: str, new_state: dict | None) -> None:

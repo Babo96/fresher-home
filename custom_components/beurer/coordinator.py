@@ -7,6 +7,8 @@ import logging
 import time
 from typing import Any, Awaitable, Callable, Dict, Optional, Set
 
+from homeassistant.exceptions import HomeAssistantError
+
 from .const import (  # type: ignore
     DISCONNECT_TIMEOUT,
 )
@@ -163,7 +165,7 @@ class BeurerDataUpdateCoordinator:
         """Send a command to a device via SignalR and handle token refresh on 401."""
         if self.signalr_client is None:
             _LOGGER.debug("No SignalR client; cannot send command for %s", device_id)
-            return
+            raise HomeAssistantError("Not connected to device")
 
         try:
             await self.signalr_client.async_send_command(device_id, function, value)
@@ -178,8 +180,10 @@ class BeurerDataUpdateCoordinator:
                     )
                 except Exception as retry_err:
                     _LOGGER.error("Command failed after token refresh: %s", retry_err)
+                    raise retry_err
             else:
                 _LOGGER.error("Failed to send command: %s", msg)
+                raise err
 
     async def async_register_entity(
         self, device_id: str, callback: Callable[[str, Dict[str, Any]], Any]

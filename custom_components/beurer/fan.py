@@ -111,36 +111,36 @@ class BeurerFan(FanEntity, BeurerEntity):
 
     async def async_turn_on(self, percentage: int | None = None, **kwargs: Any) -> None:
         """Turn on the fan."""
-        try:
-            # If percentage is provided, set that speed
-            if percentage is not None and percentage > 0:
-                await self.async_set_percentage(percentage)
-                return
+        # If percentage is provided, set that speed
+        if percentage is not None and percentage > 0:
+            await self.async_set_percentage(percentage)
+            return
 
-            await self.coordinator.async_send_command(self.device_id, "power", 1)
-            # Update local state optimistically
+        old_power = self.coordinator.device_states.get(self.device_id, {}).get("power")
+        try:
             if self.device_id in self.coordinator.device_states:
                 self.coordinator.device_states[self.device_id]["power"] = 1
                 self.async_write_ha_state()
-        except Exception as err:
-            _LOGGER.error(
-                "Failed to turn on fan for device %s: %s", self.device_id, err
-            )
-            raise
+            await self.coordinator.async_send_command(self.device_id, "power", 1)
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_power is not None:
+                self.coordinator.device_states[self.device_id]["power"] = old_power
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to turn on fan for device %s", self.device_id)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn off the fan."""
+        old_power = self.coordinator.device_states.get(self.device_id, {}).get("power")
         try:
-            await self.coordinator.async_send_command(self.device_id, "power", 0)
-            # Update local state optimistically
             if self.device_id in self.coordinator.device_states:
                 self.coordinator.device_states[self.device_id]["power"] = 0
                 self.async_write_ha_state()
-        except Exception as err:
-            _LOGGER.error(
-                "Failed to turn off fan for device %s: %s", self.device_id, err
-            )
-            raise
+            await self.coordinator.async_send_command(self.device_id, "power", 0)
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_power is not None:
+                self.coordinator.device_states[self.device_id]["power"] = old_power
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to turn off fan for device %s", self.device_id)
 
     async def async_set_percentage(self, percentage: int) -> None:
         """Set the speed of the fan as a percentage."""
@@ -148,8 +148,6 @@ class BeurerFan(FanEntity, BeurerEntity):
             await self.async_turn_off()
             return
 
-        # Map percentage to speed 1-4
-        # 1-25 -> 1, 26-50 -> 2, 51-75 -> 3, 76-100 -> 4
         if percentage <= 25:
             speed = 1
         elif percentage <= 50:
@@ -159,21 +157,23 @@ class BeurerFan(FanEntity, BeurerEntity):
         else:
             speed = 4
 
+        old_power = self.coordinator.device_states.get(self.device_id, {}).get("power")
+        old_fan = self.coordinator.device_states.get(self.device_id, {}).get("fan")
         try:
-            # First ensure the fan is on
-            await self.coordinator.async_send_command(self.device_id, "power", 1)
-            # Then set the speed
-            await self.coordinator.async_send_command(self.device_id, "fan", speed)
-            # Update local state optimistically
             if self.device_id in self.coordinator.device_states:
                 self.coordinator.device_states[self.device_id]["power"] = 1
                 self.coordinator.device_states[self.device_id]["fan"] = speed
                 self.async_write_ha_state()
-        except Exception as err:
-            _LOGGER.error(
-                "Failed to set fan speed for device %s: %s", self.device_id, err
-            )
-            raise
+            await self.coordinator.async_send_command(self.device_id, "power", 1)
+            await self.coordinator.async_send_command(self.device_id, "fan", speed)
+        except Exception:
+            if self.device_id in self.coordinator.device_states:
+                if old_power is not None:
+                    self.coordinator.device_states[self.device_id]["power"] = old_power
+                if old_fan is not None:
+                    self.coordinator.device_states[self.device_id]["fan"] = old_fan
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to set fan speed for device %s", self.device_id)
 
     @callback
     def handle_state_update(self, device_id: str, new_state: dict | None) -> None:

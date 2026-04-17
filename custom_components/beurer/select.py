@@ -90,8 +90,19 @@ class BeurerModeSelect(BeurerEntity, SelectEntity):
     async def async_select_option(self, option: str) -> None:
         """Set the mode."""
         value = MODE_VALUE_MAP.get(option)
-        if value is not None:
+        if value is None:
+            return
+        old_value = self.coordinator.device_states.get(self.device_id, {}).get("mode")
+        try:
+            if self.device_id in self.coordinator.device_states:
+                self.coordinator.device_states[self.device_id]["mode"] = value
+                self.async_write_ha_state()
             await self.coordinator.async_send_command(self.device_id, "mode", value)
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_value is not None:
+                self.coordinator.device_states[self.device_id]["mode"] = old_value
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to set mode for device %s", self.device_id)
 
     @callback
     def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
@@ -138,10 +149,19 @@ class BeurerTempUnitSelect(BeurerEntity, SelectEntity):
     async def async_select_option(self, option: str) -> None:
         """Set the temperature unit."""
         value = TEMP_UNIT_VALUE_MAP.get(option)
-        if value is not None:
-            await self.coordinator.async_send_command(
-                self.device_id, "tempUnitSwitcher", value
-            )
+        if value is None:
+            return
+        old_value = self.coordinator.device_states.get(self.device_id, {}).get("tempUnitSwitcher")
+        try:
+            if self.device_id in self.coordinator.device_states:
+                self.coordinator.device_states[self.device_id]["tempUnitSwitcher"] = value
+                self.async_write_ha_state()
+            await self.coordinator.async_send_command(self.device_id, "tempUnitSwitcher", value)
+        except Exception:
+            if self.device_id in self.coordinator.device_states and old_value is not None:
+                self.coordinator.device_states[self.device_id]["tempUnitSwitcher"] = old_value
+                self.async_write_ha_state()
+            _LOGGER.warning("Failed to set tempUnitSwitcher for device %s", self.device_id)
 
     @callback
     def handle_state_update(self, device_id: str, new_state: dict | None) -> None:
