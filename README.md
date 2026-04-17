@@ -154,7 +154,7 @@ If sensor values appear stale:
 
 Contributions are welcome. Please open an issue or pull request on the repository.
 
-When submitting pull requests, please follow the template in `.gitea/PULL_REQUEST_TEMPLATE.md`.
+When submitting pull requests, please follow the template in `.github/PULL_REQUEST_TEMPLATE.md`.
 
 ## License
 
@@ -162,6 +162,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Credits
 
-- Built on the SignalR protocol reverse-engineered from the Beurer FreshHome Android app v1.5.0
+- **Reverse Engineering**: The underlying SignalR protocol was heavily reverse-engineered by the repository author from the Beurer FreshHome mobile app.
+- **Development**: The clean Home Assistant architecture and implementation was primarily generated with the assistance of AI coding tools (OpenCode/Antigravity), heavily guided and reviewed by the repository author.
 - Not affiliated with or endorsed by Beurer GmbH
 - All product names and trademarks are property of their respective owners
