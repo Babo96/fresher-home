@@ -12,6 +12,7 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
+    EntityCategory,
     UnitOfTemperature,
     PERCENTAGE,
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
@@ -67,7 +68,7 @@ class BeurerPM25Sensor(BeurerEntity, SensorEntity):
         """Initialize the PM2.5 sensor."""
         super().__init__(coordinator, device_id)
         self._attr_unique_id = f"{device_id}_pm25"
-        self._attr_name = "PM2.5"
+        self._attr_translation_key = "pm25"
 
     @property
     def native_value(self) -> float | None:
@@ -103,7 +104,7 @@ class BeurerAQISensor(BeurerEntity, SensorEntity):
         """Initialize the AQI sensor."""
         super().__init__(coordinator, device_id)
         self._attr_unique_id = f"{device_id}_aqi"
-        self._attr_name = "Air Quality Index"
+        self._attr_translation_key = "aqi"
 
     @property
     def native_value(self) -> int | None:
@@ -137,7 +138,7 @@ class BeurerHumiditySensor(BeurerEntity, SensorEntity):
         """Initialize the humidity sensor."""
         super().__init__(coordinator, device_id)
         self._attr_unique_id = f"{device_id}_humidity"
-        self._attr_name = "Humidity"
+        self._attr_translation_key = "humidity"
 
     @property
     def native_value(self) -> int | None:
@@ -170,7 +171,7 @@ class BeurerTemperatureSensor(BeurerEntity, SensorEntity):
         """Initialize the temperature sensor."""
         super().__init__(coordinator, device_id)
         self._attr_unique_id = f"{device_id}_temperature"
-        self._attr_name = "Temperature"
+        self._attr_translation_key = "temperature"
 
     @property
     def native_unit_of_measurement(self) -> str:
@@ -204,6 +205,7 @@ class BeurerTemperatureSensor(BeurerEntity, SensorEntity):
 class BeurerFilterStatusSensor(BeurerEntity, SensorEntity):
     """Representation of a Beurer filter status sensor (hours remaining)."""
 
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = "h"
     _attr_icon = "mdi:air-filter"
@@ -216,7 +218,7 @@ class BeurerFilterStatusSensor(BeurerEntity, SensorEntity):
         """Initialize the filter status sensor."""
         super().__init__(coordinator, device_id)
         self._attr_unique_id = f"{device_id}_filter_status"
-        self._attr_name = "Filter Remaining"
+        self._attr_translation_key = "filter_status"
 
     @property
     def native_value(self) -> int | None:

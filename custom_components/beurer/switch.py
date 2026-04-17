@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.const import EntityCategory
 from homeassistant.core import callback
 
 from .const import DOMAIN
@@ -30,7 +31,10 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class BeurerSleepSwitch(BeurerEntity, SwitchEntity):
     """Switch for Sleep Mode."""
 
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_translation_key = "sleep"
     _attr_icon = "mdi:power-sleep"
+
 
     def __init__(
         self, coordinator: BeurerDataUpdateCoordinator, device_id: str
@@ -42,11 +46,6 @@ class BeurerSleepSwitch(BeurerEntity, SwitchEntity):
     def unique_id(self) -> str:
         """Return unique ID."""
         return f"{self.device_id}_sleep_switch"
-
-    @property
-    def name(self) -> str:
-        """Return name."""
-        return f"{self.coordinator.get_device_name(self.device_id)} Sleep Mode"
 
     @property
     def is_on(self) -> bool | None:
@@ -92,7 +91,10 @@ class BeurerSleepSwitch(BeurerEntity, SwitchEntity):
 class BeurerUVSwitch(BeurerEntity, SwitchEntity):
     """Switch for UV Light."""
 
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_translation_key = "uv"
     _attr_icon = "mdi:lightbulb-ultraviolet"
+
 
     def __init__(
         self, coordinator: BeurerDataUpdateCoordinator, device_id: str
@@ -104,11 +106,6 @@ class BeurerUVSwitch(BeurerEntity, SwitchEntity):
     def unique_id(self) -> str:
         """Return unique ID."""
         return f"{self.device_id}_uv_switch"
-
-    @property
-    def name(self) -> str:
-        """Return name."""
-        return f"{self.coordinator.get_device_name(self.device_id)} UV Light"
 
     @property
     def is_on(self) -> bool | None:
@@ -154,7 +151,10 @@ class BeurerUVSwitch(BeurerEntity, SwitchEntity):
 class BeurerBuzzerSwitch(BeurerEntity, SwitchEntity):
     """Switch for Buzzer."""
 
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_translation_key = "buzzer"
     _attr_icon = "mdi:volume-high"
+
 
     def __init__(
         self, coordinator: BeurerDataUpdateCoordinator, device_id: str
@@ -166,11 +166,6 @@ class BeurerBuzzerSwitch(BeurerEntity, SwitchEntity):
     def unique_id(self) -> str:
         """Return unique ID."""
         return f"{self.device_id}_buzzer_switch"
-
-    @property
-    def name(self) -> str:
-        """Return name."""
-        return f"{self.coordinator.get_device_name(self.device_id)} Buzzer"
 
     @property
     def is_on(self) -> bool | None:

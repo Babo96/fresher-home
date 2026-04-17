@@ -66,12 +66,6 @@ class BeurerFan(FanEntity, BeurerEntity):
         return f"{self.device_id}_fan"
 
     @property
-    def name(self) -> str:
-        """Return the display name of this fan."""
-        device_name = self.coordinator.get_device_name(self.device_id)
-        return f"{device_name} Fan"
-
-    @property
     def is_on(self) -> bool | None:
         """Return true if the fan is on."""
         device_state = self.coordinator.device_states.get(self.device_id)

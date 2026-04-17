@@ -13,6 +13,7 @@ from .coordinator import BeurerDataUpdateCoordinator
 class BeurerEntity(Entity):
     """Base class for Beurer FreshHome entities."""
 
+    _attr_has_entity_name = True
     _attr_should_poll = False
 
     def __init__(

@@ -18,5 +18,44 @@
     "abort": {
       "already_configured": "Account is already configured"
     }
+  },
+  "entity": {
+    "sensor": {
+      "pm25": { "name": "PM2.5" },
+      "aqi": { "name": "Air Quality Index" },
+      "humidity": { "name": "Humidity" },
+      "temperature": { "name": "Temperature" },
+      "filter_status": { "name": "Filter Remaining" }
+    },
+    "switch": {
+      "sleep": { "name": "Sleep Mode" },
+      "uv": { "name": "UV Light" },
+      "buzzer": { "name": "Buzzer" }
+    },
+    "number": {
+      "timer": { "name": "Timer" }
+    },
+    "select": {
+      "mode": {
+        "name": "Mode",
+        "state": {
+          "manual": "Manual",
+          "auto": "Auto",
+          "sleep": "Sleep",
+          "turbo": "Turbo"
+        }
+      },
+      "temp_unit": {
+        "name": "Temperature Unit",
+        "state": {
+          "celsius": "Celsius",
+          "fahrenheit": "Fahrenheit"
+        }
+      }
+    },
+    "button": {
+      "filter_reset": { "name": "Reset Filter" },
+      "refresh": { "name": "Refresh" }
+    }
   }
 }

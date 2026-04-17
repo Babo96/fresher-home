@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from homeassistant.components.button import ButtonEntity
+from homeassistant.const import EntityCategory
 from homeassistant.core import callback
 
 from .const import DOMAIN
@@ -29,6 +30,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class BeurerFilterResetButton(BeurerEntity, ButtonEntity):
     """Button to reset the filter timer."""
 
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_translation_key = "filter_reset"
     _attr_icon = "mdi:air-filter"
 
     def __init__(
@@ -41,11 +44,6 @@ class BeurerFilterResetButton(BeurerEntity, ButtonEntity):
     def unique_id(self) -> str:
         """Return unique ID."""
         return f"{self.device_id}_filterReset_button"
-
-    @property
-    def name(self) -> str:
-        """Return name."""
-        return f"{self.coordinator.get_device_name(self.device_id)} Reset Filter"
 
     async def async_press(self) -> None:
         """Handle the button press."""
@@ -61,6 +59,8 @@ class BeurerFilterResetButton(BeurerEntity, ButtonEntity):
 class BeurerReadButton(BeurerEntity, ButtonEntity):
     """Button to request a state refresh from the device."""
 
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_translation_key = "refresh"
     _attr_icon = "mdi:refresh"
 
     def __init__(
@@ -73,11 +73,6 @@ class BeurerReadButton(BeurerEntity, ButtonEntity):
     def unique_id(self) -> str:
         """Return unique ID."""
         return f"{self.device_id}_read_button"
-
-    @property
-    def name(self) -> str:
-        """Return name."""
-        return f"{self.coordinator.get_device_name(self.device_id)} Refresh"
 
     async def async_press(self) -> None:
         """Handle the button press."""

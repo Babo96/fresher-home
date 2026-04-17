@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 
 from homeassistant.components.number import NumberEntity
+from homeassistant.const import EntityCategory
 from homeassistant.core import callback
 
 from .const import DOMAIN
@@ -32,7 +33,10 @@ class BeurerTimerNumber(BeurerEntity, NumberEntity):
     _attr_native_max_value = 480
     _attr_native_step = 30
     _attr_native_unit_of_measurement = "min"
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_translation_key = "timer"
     _attr_icon = "mdi:timer-outline"
+
 
     def __init__(
         self, coordinator: BeurerDataUpdateCoordinator, device_id: str
@@ -44,11 +48,6 @@ class BeurerTimerNumber(BeurerEntity, NumberEntity):
     def unique_id(self) -> str:
         """Return unique ID."""
         return f"{self.device_id}_timer"
-
-    @property
-    def name(self) -> str:
-        """Return name."""
-        return f"{self.coordinator.get_device_name(self.device_id)} Timer"
 
     @property
     def native_value(self) -> float | None:

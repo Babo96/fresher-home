@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
+from homeassistant.const import EntityCategory
 from homeassistant.core import callback
 
 from .const import DOMAIN
@@ -55,6 +56,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class BeurerModeSelect(BeurerEntity, SelectEntity):
     """Select for Mode."""
 
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_translation_key = "mode"
     _attr_icon = "mdi:fan"
 
     def __init__(
@@ -67,11 +70,6 @@ class BeurerModeSelect(BeurerEntity, SelectEntity):
     def unique_id(self) -> str:
         """Return unique ID."""
         return f"{self.device_id}_mode_select"
-
-    @property
-    def name(self) -> str:
-        """Return name."""
-        return f"{self.coordinator.get_device_name(self.device_id)} Mode"
 
     @property
     def options(self) -> list[str]:
@@ -114,6 +112,8 @@ class BeurerModeSelect(BeurerEntity, SelectEntity):
 class BeurerTempUnitSelect(BeurerEntity, SelectEntity):
     """Select for Temperature Unit."""
 
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_translation_key = "temp_unit"
     _attr_icon = "mdi:thermometer"
 
     def __init__(
@@ -126,11 +126,6 @@ class BeurerTempUnitSelect(BeurerEntity, SelectEntity):
     def unique_id(self) -> str:
         """Return unique ID."""
         return f"{self.device_id}_tempUnitSwitcher_select"
-
-    @property
-    def name(self) -> str:
-        """Return name."""
-        return f"{self.coordinator.get_device_name(self.device_id)} Temperature Unit"
 
     @property
     def options(self) -> list[str]:
