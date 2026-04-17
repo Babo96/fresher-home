@@ -27,7 +27,7 @@ Other Beurer FreshHome models may also work but have not been tested. If you hav
 
 ## Credits
 
-- **Reverse Engineering**: The underlying SignalR protocol was heavily reverse-engineered by me from the Beurer FreshHome mobile app.
+- **Reverse Engineering**: The underlying SignalR protocol was mainly reverse-engineered by me from the Beurer FreshHome mobile app.
 - **Development**: The clean Home Assistant architecture and implementation was primarily generated with the assistance of AI coding tools (OpenCode/Antigravity), heavily guided and reviewed by me.
 - Not affiliated with or endorsed by Beurer GmbH
 - All product names and trademarks are property of their respective owners
