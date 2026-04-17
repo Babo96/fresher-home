@@ -7,7 +7,9 @@
   "iot_class": "cloud_push",
   "requirements": [],
   "dependencies": [],
-  "codeowners": ["@custom"],
-  "documentation": "https://github.com/custom/fresherhome",
-  "issue_tracker": "https://github.com/custom/fresherhome/issues"
+  "codeowners": [
+    "@Babo96"
+  ],
+  "documentation": "https://github.com/Babo96/fresher-home",
+  "issue_tracker": "https://github.com/Babo96/fresher-home/issues"
 }
