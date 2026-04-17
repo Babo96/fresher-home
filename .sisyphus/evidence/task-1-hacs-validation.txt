@@ -1,4 +1,0 @@
-manifest OK
-hacs OK
-init compiles
-const compiles
