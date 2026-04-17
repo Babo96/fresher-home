@@ -35,9 +35,6 @@ pytest.ini
 # Sisyphus internal
 .sisyphus/
 
-# Gitea
-.gitea/
-
 # venv
 venv/
 .venv/
