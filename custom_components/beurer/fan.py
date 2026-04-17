@@ -103,7 +103,7 @@ class BeurerFan(FanEntity, BeurerEntity):
         """Return the step size for percentage."""
         return 25
 
-    async def async_turn_on(self, percentage: int | None = None, **kwargs: Any) -> None:
+    async def async_turn_on(self, percentage: int | None = None, preset_mode: str | None = None, **kwargs: Any) -> None:
         """Turn on the fan."""
         # If percentage is provided, set that speed
         if percentage is not None and percentage > 0:
