@@ -25,6 +25,13 @@ The following Beurer FreshHome air purifier models are supported:
 
 Other Beurer FreshHome models may also work but have not been tested. If you have a different model, please open an issue to report your experience.
 
+## Credits
+
+- **Reverse Engineering**: The underlying SignalR protocol was heavily reverse-engineered by me from the Beurer FreshHome mobile app.
+- **Development**: The clean Home Assistant architecture and implementation was primarily generated with the assistance of AI coding tools (OpenCode/Antigravity), heavily guided and reviewed by me.
+- Not affiliated with or endorsed by Beurer GmbH
+- All product names and trademarks are property of their respective owners
+
 ## Features
 
 ### Control Functions
@@ -159,10 +166,3 @@ When submitting pull requests, please follow the template in `.github/PULL_REQUE
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Credits
-
-- **Reverse Engineering**: The underlying SignalR protocol was heavily reverse-engineered by the repository author from the Beurer FreshHome mobile app.
-- **Development**: The clean Home Assistant architecture and implementation was primarily generated with the assistance of AI coding tools (OpenCode/Antigravity), heavily guided and reviewed by the repository author.
-- Not affiliated with or endorsed by Beurer GmbH
-- All product names and trademarks are property of their respective owners
