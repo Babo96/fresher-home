@@ -28,8 +28,8 @@ Other Beurer FreshHome models may also work but have not been tested. If you hav
 ## Credits
 
 - **Reverse Engineering**: The underlying SignalR protocol was mainly reverse-engineered by me from the Beurer FreshHome mobile app.
-- **Development**: The clean Home Assistant architecture and implementation was primarily generated with the assistance of AI coding tools (OpenCode/Antigravity), heavily guided and reviewed by me.
-- Not affiliated with or endorsed by Beurer GmbH
+- **Development**: The Home Assistant Integration architecture and implementation was primarily generated with the assistance of AI coding tools (OpenCode/Antigravity), guided and heavily reviewed by me.
+- **Disclaimer: Not affiliated with or endorsed by Beurer GmbH**
 - All product names and trademarks are property of their respective owners
 
 ## Features
@@ -61,28 +61,24 @@ The integration exposes the following sensor data from your air purifier:
 | **Air Quality Index** | - | Overall air quality rating (1-4) |
 | **Humidity** | % | Relative humidity level |
 | **Temperature** | °C/°F | Current room temperature |
-| **Filter Status** | % | Remaining filter life percentage |
+| **Filter Status** | h | Remaining filter life in hours |
 
 ## Installation
 
-### Manual Installation (Recommended)
-
-This is the primary installation method since the repository is hosted on Forgejo.
-
-#### Option A: Using HACS Developer Tools (if you mirror to GitHub)
+### Option A: Using HACS Developer Tools
 
 If you mirror this repository to GitHub, you can install via HACS:
 
 1. Open HACS in your Home Assistant instance
 2. Go to **Integrations**
 3. Click the **⋮** menu and select **Custom repositories**
-4. Add your GitHub mirror URL
+4. Add https://github.com/Babo96/fresher-home.git
 5. Set the category to **Integration**
 6. Click **Add**
 7. Find **Beurer FreshHome** in the HACS store and click **Download**
 8. Restart Home Assistant
 
-#### Option B: Manual Download
+### Option B: Manual Download
 
 1. Download or clone this repository
 2. Copy the `custom_components/beurer/` folder to your Home Assistant `config/custom_components/` directory
