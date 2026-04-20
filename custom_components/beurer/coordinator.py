@@ -51,6 +51,11 @@ class BeurerDataUpdateCoordinator:
         access_token = data.get("access_token") or data.get("token")
         refresh_token = data.get("refresh_token")
 
+        # Validate and refresh token if needed before making API calls
+        access_token = await self._ensure_valid_token(
+            email, access_token, refresh_token
+        )
+
         # Load devices from API if possible
         devices: list[BeurerDevice] = []
         if self.api_client is not None and email and access_token:
@@ -108,6 +113,70 @@ class BeurerDataUpdateCoordinator:
                 await self.api_client.close()  # type: ignore[call-arg]
             except Exception:  # pragma: no cover
                 pass
+
+    async def _ensure_valid_token(
+        self,
+        email: str | None,
+        access_token: str | None,
+        refresh_token: str | None,
+    ) -> str | None:
+        """Ensure we have a valid access token, refreshing if needed.
+
+        Args:
+            email: User email (for logging purposes).
+            access_token: Current access token to validate.
+            refresh_token: Refresh token for token refresh.
+
+        Returns:
+            Valid access token or None if authentication fails.
+        """
+        if not email:
+            _LOGGER.debug("No email available for token validation")
+            return None
+
+        auth_client = getattr(self.api_client, "_auth_client", None)
+        if auth_client is None:
+            _LOGGER.debug("No auth client available for token validation")
+            return access_token
+
+        # Check if current token is still valid
+        if access_token and auth_client.validate_token(access_token):
+            _LOGGER.debug("Access token is valid")
+            return access_token
+
+        _LOGGER.debug("Access token expired or invalid, attempting refresh")
+
+        # Try to refresh the token
+        if refresh_token:
+            try:
+                new_tokens = await auth_client.refresh_token(refresh_token)
+                new_access = getattr(new_tokens, "access_token", None)
+                new_refresh = getattr(new_tokens, "refresh_token", None)
+
+                if new_access:
+                    # Update config entry with new tokens
+                    data = dict(getattr(self.entry, "data", {}) or {})
+                    data["access_token"] = new_access
+                    if new_refresh:
+                        data["refresh_token"] = new_refresh
+
+                    await self.hass.config_entries.async_update_entry(
+                        self.entry, data=data
+                    )
+                    self.entry.data.update(data)  # type: ignore[attr-defined]
+
+                    _LOGGER.debug("Token refreshed successfully")
+                    return new_access
+            except Exception as err:
+                _LOGGER.debug("Token refresh failed: %s", err)
+
+        _LOGGER.error(
+            "Unable to obtain valid access token for %s. "
+            "The refresh token may have expired. "
+            "Please remove and re-add the Beurer FreshHome integration.",
+            email
+        )
+        return None
 
     async def async_refresh_token(self) -> None:
         """Refresh access token in a thread-safe manner."""
