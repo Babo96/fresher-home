@@ -1,7 +1,7 @@
 {
   "domain": "beurer",
   "name": "Beurer FreshHome",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "integration_type": "hub",
   "config_flow": true,
   "iot_class": "cloud_push",
