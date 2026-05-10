@@ -7,7 +7,7 @@ import logging
 import time
 from typing import Any, Awaitable, Callable, Dict, Optional, Set
 
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import ConfigEntryAuthFailed, HomeAssistantError
 
 from .const import (  # type: ignore
     DISCONNECT_TIMEOUT,
@@ -173,10 +173,10 @@ class BeurerDataUpdateCoordinator:
         _LOGGER.error(
             "Unable to obtain valid access token for %s. "
             "The refresh token may have expired. "
-            "Please remove and re-add the Beurer FreshHome integration.",
+            "Triggering reauthentication.",
             email
         )
-        return None
+        raise ConfigEntryAuthFailed("Refresh token expired or invalid.")
 
     async def async_refresh_token(self) -> None:
         """Refresh access token in a thread-safe manner."""

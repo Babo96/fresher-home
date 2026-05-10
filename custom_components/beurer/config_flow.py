@@ -81,3 +81,71 @@ class BeurerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=data_schema,
             errors=errors,
         )
+
+    async def async_step_reauth(
+        self, entry_data: dict[str, Any]
+    ) -> FlowResult:
+        """Handle reauthentication."""
+        self.context["title_placeholders"] = {"email": entry_data.get(CONF_EMAIL, "")}
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Dialog that informs the user that reauth is required."""
+        errors: dict[str, str] = {}
+
+        entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
+        email = entry.data[CONF_EMAIL]
+
+        if user_input is not None:
+            password = user_input[CONF_PASSWORD]
+
+            auth_client = None
+            try:
+                auth_client = BeurerAuthClient()
+                _LOGGER.debug("Attempting reauth login for email: %s", email)
+                login_response = await auth_client.login(email, password)
+
+                # Update existing entry
+                self.hass.config_entries.async_update_entry(
+                    entry,
+                    data={
+                        **entry.data,
+                        "access_token": login_response.access_token,
+                        "refresh_token": login_response.refresh_token,
+                        "expires_in": login_response.expires_in,
+                        "token_type": login_response.token_type,
+                    },
+                )
+                await self.hass.config_entries.async_reload(entry.entry_id)
+                return self.async_abort(reason="reauth_successful")
+
+            except BeurerApiClientError as err:
+                error_str = str(err).lower()
+                _LOGGER.error("Beurer API error during reauth login: %s", err)
+                if "invalid_grant" in error_str:
+                    errors["base"] = "invalid_auth"
+                elif "connection" in error_str:
+                    errors["base"] = "cannot_connect"
+                else:
+                    errors["base"] = "unknown"
+            except Exception as err:
+                _LOGGER.exception("Unexpected error during reauth login: %s", err)
+                errors["base"] = "unknown"
+            finally:
+                if auth_client is not None:
+                    await auth_client.close()
+
+        data_schema = vol.Schema(
+            {
+                vol.Required(CONF_PASSWORD): str,
+            }
+        )
+
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=data_schema,
+            description_placeholders={"email": email},
+            errors=errors,
+        )
